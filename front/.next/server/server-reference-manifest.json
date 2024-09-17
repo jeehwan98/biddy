@@ -1,5 +1,22 @@
 {
-  "node": {},
+  "node": {
+    "fcb5b2494d2d42bf8bb53d79271c91de8e246232": {
+      "workers": {
+        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fcoding_files%2Fbiddy%2Ffront%2Factions%2Fauth-actions.tsx%22%2C%5B%22loginAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/login/page": "action-browser"
+      }
+    },
+    "0c0bd57cf1aaa43265414ec0f22958c4f4d48787": {
+      "workers": {
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fcoding_files%2Fbiddy%2Ffront%2Factions%2FplaceBid-action.tsx%22%2C%5B%22placeBidAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
-  "encryptionKey": "wrLpu+ocSILZ4COYZTJZcT5XB5LI+nBCc2FLRHLQLnc="
+  "encryptionKey": "T8jqX8Iji65C0mp1gHvfe0oOtO1wCspNj+2SxNvjmZA="
 }
