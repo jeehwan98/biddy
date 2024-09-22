@@ -14,7 +14,7 @@ interface LoginResponse {
   failType: string | null;
 }
 
-export async function loginAPI(userInfo: LoginUserInfoProps) {
+export async function loginAPI(loginInfo: LoginUserInfoProps) {
 
   try {
     const response = await fetch(`${process.env.LOGIN_API_BASE_URL}/login`, {
@@ -23,23 +23,26 @@ export async function loginAPI(userInfo: LoginUserInfoProps) {
         'Content-Type': 'application/json',
         'Accept': '*/*'
       },
-      body: JSON.stringify(userInfo),
+      body: JSON.stringify(loginInfo),
       credentials: 'include'
     });
 
     const responseData: LoginResponse = await response.json();
-    const failedMessage = responseData.failType;
-    const successMessage = responseData.message;
 
-    if (failedMessage) {
-      return failedMessage;
+    if (responseData.failType) {
+      return {
+        errors: {
+          error: responseData.failType
+        }
+      };
     }
 
-    if (successMessage == 'login success') {
-      revalidatePath('/');
+    if (responseData.message == 'login success') {
+      console.log('responseData: ', responseData);
+      revalidatePath('/user');
       redirect('/');
+      return null;
     }
-
   } catch (error) {
     throw error;
   }

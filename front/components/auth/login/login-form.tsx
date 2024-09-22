@@ -5,7 +5,7 @@ import { useFormState } from "react-dom"
 
 export default function LoginForm() {
 
-  const [formState, formAction] = useFormState(loginAction, {});
+  const [formState, formAction] = useFormState(loginAction, { errors: {} });
 
   return (
     <form action={formAction}>
@@ -27,7 +27,14 @@ export default function LoginForm() {
           placeholder="Password"
         />
       </div>
-      {formState.message && <p className="text-red-600 mb-3">{formState.message}</p>}
+      {/* {formState.errors && <p className="text-red-600 mb-3">{formState.message}</p>} */}
+      {formState?.errors && Object.keys(formState.errors || {}).length > 0 && (
+        <ul>
+          {Object.keys(formState.errors || {}).map((error) => (
+            <li key={error} className="text-red-600 mb-4 mt-4 text-sm">{formState.errors[error]}</li>
+          ))}
+        </ul>
+      )}
       <button
         type="submit"
         className="w-full bg-red-600 text-white p-3 rounded hover:bg-red-700 transition-colors"

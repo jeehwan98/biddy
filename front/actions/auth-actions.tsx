@@ -16,7 +16,9 @@ export async function loginAction(prevState: null, formData: FormData) {
 
   if (!formData) {
     return {
-      message: 'Invalid form data', formData: null
+      errors: {
+        error: 'Invalid form data'
+      }
     };
   }
 
@@ -33,7 +35,5 @@ export async function loginAction(prevState: null, formData: FormData) {
     };
   }
 
-  await loginAPI(loginDetails);
-  revalidatePath('/');
-  redirect('/');
+  return loginAPI(loginDetails);
 }

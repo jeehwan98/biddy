@@ -4,6 +4,10 @@ import com.jee.back.user.entity.User;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class TokenUtil {
 
@@ -74,7 +79,7 @@ public class TokenUtil {
     }
 
     public static String splitHeader(String header) {
-        System.out.println("split header");
+        log.info("split header");
         if (header != null) {
             return header.split(" ")[1];
         } else {

@@ -23,7 +23,7 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
         if (exception instanceof AuthenticationServiceException) {
             failMsg = "userId doesn't exist";
         } else if (exception instanceof BadCredentialsException) {
-            failMsg = "userId or password is incorrect";
+            failMsg = "Incorrect password"; // userId or password is incorrect
         } else if (exception instanceof LockedException) {
             failMsg = "account is locked";
         } else if (exception instanceof DisabledException) {

@@ -17,4 +17,5 @@ public class UserService {
         User registerUserInfo = modelMapper.map(registerDTO, User.class);
         userRepository.save(registerUserInfo);
     }
+
 }

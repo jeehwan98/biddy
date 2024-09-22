@@ -2,6 +2,7 @@ package com.jee.back.auth.config;
 
 import com.jee.back.auth.filter.HeaderFilter;
 import com.jee.back.auth.interceptor.JwtTokenInterceptor;
+import com.jee.back.common.AuthConstants;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
-                .allowCredentials(true); // allows cookie
+                .allowCredentials(true) // allows cookie
+                .exposedHeaders("Authorization");
     }
 }
