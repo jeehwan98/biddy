@@ -2,6 +2,8 @@
 
 import { loginAction } from "@/actions/auth-actions";
 import { useFormState } from "react-dom"
+import InputField from "../input-field";
+import Link from "next/link";
 
 export default function LoginForm() {
 
@@ -9,24 +11,14 @@ export default function LoginForm() {
 
   return (
     <form action={formAction}>
-      <div className="mb-4">
-        <input
-          type="text"
-          id="userId"
-          name="userId"
-          className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-300"
-          placeholder="UserId"
-        />
-      </div>
-      <div className="mb-4">
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className="w-full p-3 border rounded focus:outline-none focus:ring focus:border-blue-300"
-          placeholder="Password"
-        />
-      </div>
+      <InputField
+        type="text"
+        name="userId"
+      />
+      <InputField
+        type="password"
+        name="password"
+      />
       {/* {formState.errors && <p className="text-red-600 mb-3">{formState.message}</p>} */}
       {formState?.errors && Object.keys(formState.errors || {}).length > 0 && (
         <ul>
@@ -43,7 +35,7 @@ export default function LoginForm() {
       </button>
       <div className="flex justify-between items-center mt-3">
         <a href="#" className="text-sm text-blue-400 hover:text-blue-600">Forgot password?</a>
-        <a href="#" className="text-sm text-blue-400 hover:text-blue-600">Register</a>
+        <Link href="/register" className="text-sm text-blue-400 hover:text-blue-600">Register</Link>
       </div>
     </form>
   )

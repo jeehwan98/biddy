@@ -1,11 +1,14 @@
 package com.jee.back.user.entity;
 
+import com.jee.back.bid.entity.Product;
 import com.jee.back.common.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -16,7 +19,7 @@ import lombok.ToString;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -41,4 +44,7 @@ public class User {
 
     @Column(name = "user_status", nullable = false, length = 30)
     private String userStatus;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Product> products;
 }

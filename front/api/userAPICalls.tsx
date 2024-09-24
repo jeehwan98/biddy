@@ -1,4 +1,4 @@
-const tokenInfo = 'BEARER eyJkYXRlIjoxNzI3MDA4OTc3MzI0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJqZWVod2FuOTgiLCJyb2xlIjoiVVNFUiIsInVzZXJTdGF0dXMiOiJhY3RpdmUiLCJpbWFnZVVybCI6ImltYWdlVXJsfiIsIm5hbWUiOiLquYDsp4DtmZgiLCJleHAiOjE3MjcwNDQ5NzcsInVzZXJJZCI6ImplZWh3YW45OCIsImlhdCI6MTcyNzAwODk3NywiZW1haWwiOiJqZWVod2FuQGV4YW1wbGUuY29tIn0.hcmNNNzOBKQKTniNunZoGGoqU8Sg3rQshC1sAbmcepA';
+const tokenInfo = 'BEARER eyJkYXRlIjoxNzI3MDg2OTc0NzQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJqZWVod2FuOTgiLCJyb2xlIjoiVVNFUiIsInVzZXJTdGF0dXMiOiJhY3RpdmUiLCJpbWFnZVVybCI6Imh0dHBzOi8vcmVzLmNsb3VkaW5hcnkuY29tL2RtYmVoc3F4MS9pbWFnZS91cGxvYWQvdjE3MjQxNjAwODIvbmV4dGpzLWNvdXJzZS1tdXRhdGlvbnMvZWYxcmh6MXBwNHBnaGJocHY2aHkuanBnIiwibmFtZSI6Iuq5gOyngO2ZmCIsImV4cCI6MTcyNzEyMjk3NCwidXNlcklkIjoiamVlaHdhbjk4IiwiaWF0IjoxNzI3MDg2OTc0LCJlbWFpbCI6ImplZWh3YW5AZXhhbXBsZS5jb20ifQ.hbM1egbV5TFZkvdiWOWotvSje8sjEi4EaUsQxTLoOOw';
 
 export async function loggedInUser() {
   try {
@@ -8,12 +8,14 @@ export async function loggedInUser() {
         'Content-type': 'application/json',
         'Accept': '*/*',
         'Authorization': tokenInfo
-      }
+      },
+      credentials: 'include'
     });
 
     const responseData = await response.json();
+    console.log(responseData.message);
+
     if (response.ok) {
-      console.log('asdasdasd', responseData);
       return responseData;
     }
 

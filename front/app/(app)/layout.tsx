@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import MainHeader from "@/components/main-header/main-header";
+import Header from "@/components/main-header/main-header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,8 +14,8 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body>
-        <MainHeader />
+      <body className="min-h-screen">
+        <Header />
         {children}
       </body>
     </html>

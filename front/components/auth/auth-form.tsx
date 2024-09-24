@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { loginLogo } from '@/app/favicon.ico';
+import loginLogo from '@/app/favicon.ico';
 import LoginForm from "@/components/auth/login/login-form";
 
 export default function AuthForm() {

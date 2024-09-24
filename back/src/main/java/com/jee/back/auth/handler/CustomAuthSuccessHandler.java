@@ -45,31 +45,34 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         HashMap<String, Object> responseMap = new HashMap<>();
         if (user != null) {
-
             if (user.getUserStatus().equals("active")) {
+                response.setStatus(HttpServletResponse.SC_OK);
                 String token = TokenUtil.generateJwtToken(user);
-                response.addHeader(AuthConstants.AUTH_HEADER, AuthConstants.TOKEN_TYPE + " " + token);
+
                 responseMap.put("message", "login success");
                 responseMap.put("roles", roles);
-                responseMap.put("token", response.getHeader(AuthConstants.AUTH_HEADER));
+                responseMap.put("token", AuthConstants.TOKEN_TYPE + " " + token);
                 log.info("token info: " + token);
 
-                // set jwt into cookies directly
+                // set JWT into cookies directly
                 Cookie loginCookie = new Cookie("Authorization", token);
                 loginCookie.setHttpOnly(true);
-                loginCookie.setSecure(false);
-                loginCookie.setPath("/");
-                loginCookie.setValue(token);
-                loginCookie.setMaxAge(60 * 60); // 1 hour
+                loginCookie.setSecure(false);   // need to set true during production**
+                loginCookie.setMaxAge(60 * 60); // 1시간
+                loginCookie.setPath("/");       // cookie available throughout the app
+                loginCookie.setDomain("localhost");
                 response.addCookie(loginCookie);
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, roles);
+                // Set Authentication context
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(user, null, roles);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } else {
             responseMap.put("message", "user is inactive");
         }
-        // this logic is required to send response body to the client.
+
+        // Send response body to the client
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(responseMap));

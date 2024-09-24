@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 // 1
 @Service
 public class DetailsService implements UserDetailsService {
@@ -22,6 +24,9 @@ public class DetailsService implements UserDetailsService {
         if (userId == null) {
             throw new AuthenticationServiceException("userId: " + userId + " is invalid");
         }
+
+//        Optional<User> user = userRepository.findByUserId(userId);
+
 
         User user = userRepository.findByUserId(userId);
         if (user == null) {

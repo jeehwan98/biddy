@@ -1,5 +1,9 @@
+"use client";
+
 import { fetchLoggedInUser } from "@/api/userAPICalls"
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { notFound } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserProfileProps {
   params: {
@@ -7,17 +11,42 @@ interface UserProfileProps {
   }
 }
 
+interface UserProfile {
+  id: number;
+  userId: string;
+  name: string;
+  email: string;
+  role: string;
+  imageUrl: string | StaticImport | undefined;
+  userStatus: string;
+}
+
 export default async function UserPage({ params }: UserProfileProps) {
+  const userId = params.userId;
+  // const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
 
-  const user = await fetchLoggedInUser(params.userId);
-  console.log('🩷', user);
+  // useEffect(() => {
+  //   async function fetchUserData() {
+  //     try {
+  //       const userDetails = await fetchLoggedInUser(userId);
+  //       setUserInfo(userDetails);
+  //     } catch (error) {
+  //       throw error;
+  //     }
+  //   }
 
-  if (!user) {
+  //   fetchUserData();
+  // }, [])
+
+  const userDetails = await fetchLoggedInUser(userId);
+
+  if (!userDetails) {
     notFound();
   }
 
-
   return (
-    <main className="p-20 text-black min-h-screen bg-gray-50">{user.userId} Profile Page</main>
+    <main className="p-20 text-black bg-gray-50">
+      <div>{userId} Profile Page</div>
+    </main>
   )
 }

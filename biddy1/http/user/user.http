@@ -1,0 +1,9 @@
+### register user
+POST https://localhost:8080/api/v1/register
+Content-Type: application/json
+
+{
+  "userId": "jeehwan123",
+  "username": "김지환",
+  "password": "123123123"
+}

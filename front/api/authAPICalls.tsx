@@ -15,16 +15,15 @@ interface LoginResponse {
 }
 
 export async function loginAPI(loginInfo: LoginUserInfoProps) {
-
   try {
     const response = await fetch(`${process.env.LOGIN_API_BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': '*/*'
+        // 'Accept': '*/*'
       },
-      body: JSON.stringify(loginInfo),
-      credentials: 'include'
+      credentials: 'include',
+      body: JSON.stringify(loginInfo)
     });
 
     const responseData: LoginResponse = await response.json();
@@ -38,7 +37,7 @@ export async function loginAPI(loginInfo: LoginUserInfoProps) {
     }
 
     if (responseData.message == 'login success') {
-      console.log('responseData: ', responseData);
+      console.log(responseData);
       revalidatePath('/user');
       redirect('/');
       return null;
@@ -46,4 +45,38 @@ export async function loginAPI(loginInfo: LoginUserInfoProps) {
   } catch (error) {
     throw error;
   }
+}
+
+interface RegisterUserProps {
+  userId: string;
+  username: string;
+  password: string;
+  imageUrl: File;
+}
+
+export async function registerUserAPI(user: RegisterUserProps) {
+  try {
+    const response = await fetch(`${process.env.LOGIN_API_BASE_URL}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Accept': '*/*'
+      },
+      credentials: 'include',
+      body: JSON.stringify(user),
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      if (responseData.message === 'user registered') {
+        revalidatePath('/login');
+        redirect('/login');
+      }
+    }
+
+  } catch (error) {
+    throw error;
+  }
+
 }
