@@ -20,18 +20,11 @@ public class DetailsService implements UserDetailsService {
     private UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        Optional<User> fetchedUser = userRepository.findByUserId(userId);
 
-        if (userId == null) {
-            throw new AuthenticationServiceException("userId: " + userId + " is invalid");
-        }
-
-//        Optional<User> user = userRepository.findByUserId(userId);
-
-
-        User user = userRepository.findByUserId(userId);
-        if (user == null) {
+        if (fetchedUser.isEmpty()) {
             throw new UsernameNotFoundException("no user found for: " + userId);
         }
-        return new DetailsUser(user);
+        return new DetailsUser(fetchedUser.get());
     }
 }

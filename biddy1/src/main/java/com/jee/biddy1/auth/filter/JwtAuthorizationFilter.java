@@ -1,23 +1,24 @@
-package com.jee.back.auth.filter;
+package com.jee.biddy1.auth.filter;
 
-import com.jee.back.auth.DetailsUser;
-import com.jee.back.common.TokenUtil;
-import com.jee.back.common.URLConstants;
-import com.jee.back.user.entity.User;
-import com.jee.back.user.repository.UserRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import com.jee.biddy1.auth.jwt.JwtProvider;
+import com.jee.biddy1.user.entity.User;
+import com.jee.biddy1.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,44 +26,44 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.SignatureException;
 import java.util.HashMap;
-import java.util.Optional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final UserRepository userRepository;
-
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
 
-        String requestURI = request.getRequestURI();
-
-        if (isPublicURL(requestURI)) {
-            filterChain.doFilter(request,response);
+        if (!request.getRequestURI().startsWith("/api/**")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+//        String path = request.getServletPath();
+        if (request.getRequestURI().equals("/api/v1/login") || request.getRequestURI().equals("/api/v1/register") || request.getRequestURI().equals("api/v1/logout")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        String token = TokenUtil.resolveToken(request);
+//        String accesstoken =
+        
+        String token = jwtProvider.resolveToken(request);
+        log.info("token details????:::: " + token);
+
         try {
-            if (token != null && TokenUtil.validateToken(token)) {
-                Claims claims = TokenUtil.getClaimsFromToken(token);
-                String userId = claims.get("userId", String.class);
-                Optional<User> fetchedUser = userRepository.findByUserId(userId);
-
-                DetailsUser setUserToAuthentication = new DetailsUser(fetchedUser.get());
-
-                AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(setUserToAuthentication, null, setUserToAuthentication.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
+            if (token != null && JwtProvider.validateToken(token)) {
+                String userId = jwtProvider.getUserIdFromToken(token);
+                log.info("got userId??::: " + userId);
+                User user = userService.findByUserId(userId);
+                authenticate(user);
                 filterChain.doFilter(request, response);
             } else {
                 throw new NullPointerException();
             }
-        } catch (NullPointerException e) {
+        }  catch (NullPointerException e) {
             handleException(response, e);
         }
     }
@@ -82,7 +83,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String resultMessage = "";
 
         if (e instanceof ExpiredJwtException) {
-            resultMessage = "token has expired";
+            resultMessage = "expired token";
         } else if (e instanceof SignatureException) {
             resultMessage = "token signature exception";
         } else if (e instanceof JwtException) {
@@ -99,12 +100,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return new JSONObject(jsonMap);
     }
 
-    private boolean isPublicURL(String requestURI) {
-        for (String url : URLConstants.PUBLIC_URLS) {
-            if (requestURI.startsWith(url)) {
-                return true;
-            }
-        }
-        return false;
+    // 강제 로그인 처리하는 method
+    private void authenticate(User user) {
+        UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.authenticated(
+                user,
+                null,
+                user.getRole().getAuthorities()
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authenticationToken);
+        SecurityContextHolder.setContext(context);
     }
 }

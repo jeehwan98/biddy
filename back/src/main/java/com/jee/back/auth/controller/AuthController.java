@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Controller
@@ -58,11 +59,12 @@ public class AuthController {
     /** Login */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
-        User fetchedUserInfo = userRepository.findByUserId(loginDTO.getUserId());
 
-        if (fetchedUserInfo == null) {
+        User fetchedUserInfo = (userRepository.findByUserId(loginDTO.getUserId())).get();
+
+        if (userRepository.findByUserId(loginDTO.getUserId()).isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User doesn't exist");
-        } else if (fetchedUserInfo != null && !passwordEncoder.matches(loginDTO.getPassword(), fetchedUserInfo.getPassword())) {
+        } else if (!passwordEncoder.matches(loginDTO.getPassword(), fetchedUserInfo.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         } else {
             return ResponseEntity.ok("Login successful");

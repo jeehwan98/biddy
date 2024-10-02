@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<?> fetchUserByUserId(@PathVariable("userId") String userId) {
-        User user = userRepository.findByUserId(userId);
+        User user = (userRepository.findByUserId(userId)).get();
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userId + " could not be found");

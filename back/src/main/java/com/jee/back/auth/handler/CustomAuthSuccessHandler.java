@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,7 +34,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
 
-    private UserService userService;
+    private final UserService userService;
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -47,7 +50,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         if (user != null) {
             if (user.getUserStatus().equals("active")) {
                 response.setStatus(HttpServletResponse.SC_OK);
-                String token = TokenUtil.generateJwtToken(user);
+                String token = tokenUtil.generateJwtToken(user);
 
                 responseMap.put("message", "login success");
                 responseMap.put("roles", roles);
@@ -55,13 +58,14 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
                 log.info("token info: " + token);
 
                 // set JWT into cookies directly
-                Cookie loginCookie = new Cookie("Authorization", token);
-                loginCookie.setHttpOnly(true);
-                loginCookie.setSecure(false);   // need to set true during production**
-                loginCookie.setMaxAge(60 * 60); // 1시간
-                loginCookie.setPath("/");       // cookie available throughout the app
-                loginCookie.setDomain("localhost");
-                response.addCookie(loginCookie);
+//                response.addHeader("Set-Cookie", setTokenToCookie(user));
+//                Cookie loginCookie = new Cookie("Authorization", token);
+//                loginCookie.setHttpOnly(true);
+//                loginCookie.setSecure(false);   // need to set true during production**
+//                loginCookie.setMaxAge(60 * 60); // 1시간
+//                loginCookie.setPath("/");       // cookie available throughout the app
+//                loginCookie.setDomain("localhost");
+//                response.addCookie(loginCookie);
 
                 // Set Authentication context
                 UsernamePasswordAuthenticationToken authenticationToken =
@@ -77,5 +81,16 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(responseMap));
         response.getWriter().flush();
+    }
+
+    private ResponseCookie setTokenToCookie(User user) {
+        return ResponseCookie
+                .from("accessToken", tokenUtil.generateJwtToken(user))
+                .path("/")
+//                .sameSite("None")
+                .sameSite("Lax")
+                .secure(false) // true for https
+                .maxAge(Duration.ofMinutes(30).getSeconds())
+                .build();
     }
 }

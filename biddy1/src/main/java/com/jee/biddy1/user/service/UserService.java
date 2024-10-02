@@ -19,10 +19,9 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     public User findByUserId(String userId) {
-        Optional<User> foundUserByUserId = userRepository.findByUserId(userId);
-        if (foundUserByUserId.isPresent()) {
-            User user = foundUserByUserId.get();
-            return user;
+        Optional<User> user = userRepository.findByUserId(userId);
+        if (user.isPresent()) {
+            return user.get();
         } else {
             throw new UsernameNotFoundException(userId);
         }

@@ -15,7 +15,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -23,15 +23,16 @@ public class UserController {
 
     /** all users */
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/users")
+    @GetMapping("/")
     public ResponseEntity<List<User>> findAllUsers() {
         List<User> allUsers = userRepository.findAll();
         return ResponseEntity.ok(allUsers);
     }
 
     /** find specific user */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<User> findUser(@RequestParam("userId") String userId) {
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> findUserByUserId(@RequestParam("userId") String userId) {
         User findUserById = userService.findByUserId(userId);
         if (findUserById != null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(findUserById);
